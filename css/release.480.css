@@ -1,0 +1,47 @@
+.mag-component-modal {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: table;
+    z-index: 10; }
+    .mag-component-modal.hidden {
+        display: none; }
+    .mag-component-modal.active > div > div > div.overlay {
+        display: none; }
+    .mag-component-modal > div {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center; }
+        .mag-component-modal > div > div {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            max-width: 80%;
+            min-width: 172.5px;
+            max-height: 80%; }
+            .mag-component-modal > div > div > div.header {
+                height: 45px;
+                line-height: 45px;
+                font-size: 24px;
+                padding: 0 20px; }
+                .mag-component-modal > div > div > div.header .text {
+                    display: table-cell;
+                    vertical-align: middle;
+                    text-align: center; }
+                    .mag-component-modal > div > div > div.header .text:empty {
+                        padding: 0; }
+            .mag-component-modal > div > div > div.body > div .item {
+                height: 40px;
+                line-height: 40px;
+                padding: 0 20px; }
+            .mag-component-modal > div > div > div.overlay {
+                display: block;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0; }

@@ -1,0 +1,17 @@
+// $license The MIT License (MIT)
+// $copyright Stanislav Kalashnik <darkpark.main$gmail.com>
+
+@import "body";
+@import "../node_modules/stb-component/sass/main";
+@import "../node_modules/mag-component-modal/sass/main";
+@import "../node_modules/mag-component-check-list/sass/main";
+
+.mag-component-modal {
+    @include stb-component-release;
+    @include mag-component-modal;
+    @include mag-component-check-list;
+
+    @if $DEVELOP {
+        @include stb-component-develop;
+    }
+}
