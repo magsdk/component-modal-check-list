@@ -10,6 +10,8 @@
 
 var Modal     = require('mag-component-modal'),
     CheckList = require('mag-component-check-list'),
+    dom       = require('spa-dom'),
+    List      = require('mag-component-list'),
     CheckBox  = require('spa-component-checkbox');
 
 
@@ -90,11 +92,33 @@ function ModalCheckList ( config ) {
     };
 
     this.list = new CheckList(config.list);
+
+    this.list.setData = function ( config ) {
+        List.prototype.setData.call(self.list, config);
+        if ( self.$titleCount ) {
+            self.$titleCount.innerText = config.data.length ? config.data.length - 1 : 0;
+        }
+    };
     config.children.push(this.list);
 
 
     // parent constructor call
     Modal.call(this, config);
+
+    self.$header.appendChild(
+        dom.tag('div', {className: 'amountWrapper'},
+            dom.tag('div', {className: 'theme-item-count'},
+                self.$titleCount = dom.tag('div', {className: 'amount'},
+                    config.list.data.length ? config.list.data.length - 1 : 0
+                )
+            )
+        )
+    );
+
+    // TODO: checked by default
+    this.labels.count.classList.add('amountWrapper');
+    this.labels.count.appendChild(dom.tag('div', {className: 'theme-item-count'}, dom.tag('div', {className: 'amount'})));
+    this.labels.count.style.visibility = 'hidden';
 
     // rewrite onclick listener
     this.list.events['click:item'] = undefined;
@@ -116,13 +140,10 @@ function ModalCheckList ( config ) {
             }
         }
 
-        // 1) if none was set, set "All_items" as selected
-        // 2) if "All_items" was set remove from others
-        // 3) if all except "All_items" was selected remove from others and set to "All_items"
         if (
-            !marked.length ||
-            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 ||
-            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1
+            !marked.length || // if none set "All" as selected
+            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 || // if "All" was set (reset others)
+            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1  // if all except "All"  was selected
         ) {
             console.log('case 1 : set to "all"');
             for ( i = 0; i < data.length; i++ ) {
@@ -131,23 +152,25 @@ function ModalCheckList ( config ) {
             this.setData({data: data, focusIndex: this.$focusItem.index});
             self.labels.text.innerText = data[0].title;
             self.labels.icon.classList.remove('active');
-            self.labels.count.innerText = 0;
+            self.labels.count.firstChild.firstChild.innerText = 0;
+            self.labels.count.style.visibility = 'hidden';
             return;
         }
-        //  if item and "All_items" item was set remove from "All_items"
+        //  if "All" item selected (set to "all" and remove from others)
         if ( marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index !== 0 ) {
             console.log('case 2 : set to not "all"');
             data[0].state = false;
             this.setData({data: data, focusIndex: this.$focusItem.index});
-            self.labels.count.innerText = marked.length - 1;
+            self.labels.count.style.visibility = 'inherit';
+            self.labels.count.firstChild.firstChild.innerText = marked.length - 1;
             self.labels.text.innerText = marked[1].title + (marked[2] ? ', ' + marked[2].title : '');
             self.labels.icon.classList.add('active');
             return;
         }
-        // renew selected items info
         if ( marked.length ) {
             console.log('case 3 : set');
-            self.labels.count.innerText = marked.length;
+            self.labels.count.style.visibility = 'inherit';
+            self.labels.count.firstChild.firstChild.innerText = marked.length;
             self.labels.text.innerText = marked[0].title + (marked[1] ? ', ' + marked[1].title : '');
             self.labels.icon.classList.add('active');
         }
@@ -162,7 +185,7 @@ function ModalCheckList ( config ) {
                 value: data.state || false
             });
 
-        if ( this.data[0] === $item.data ) { // set underline to first item
+        if ( this.data[0] === $item.data ) {  // set underline for first item
             wrapper.classList.add('theme-header');
         }
 
@@ -180,7 +203,6 @@ function ModalCheckList ( config ) {
         tr.appendChild(td);
 
         $item.checkBox = check;
-
         $item.state = check.value;
         $item.value = data.value;
 
