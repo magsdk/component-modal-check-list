@@ -9,10 +9,9 @@
 
 
 var Modal     = require('mag-component-modal'),
-    CheckList = require('mag-component-check-list'),
-    dom       = require('spa-dom'),
     List      = require('mag-component-list'),
-    CheckBox  = require('spa-component-checkbox');
+    CheckList = require('mag-component-check-list'),
+    dom       = require('spa-dom');
 
 
 /**
@@ -81,7 +80,6 @@ function ModalCheckList ( config ) {
     // sanitize
     config = config || {};
     config.list = config.list || {};
-    config.list.render = config.list.render || renderItem;
     config.list.events = config.list.events || {};
     config.children = config.children || [];
 
@@ -89,14 +87,13 @@ function ModalCheckList ( config ) {
     if ( config.labelIcon ) {
         this.label.$icon = dom.tag('div', {className: 'theme-icon ' + config.labelIcon});
     }
-    this.label.$text = dom.tag('div');
-    this.label.$count = dom.tag('div', {className: 'amountWrapper'},
-        dom.tag('div', {className: 'theme-item-count'},
-            dom.tag('div', {className: 'amount'})
+    this.label.$text = dom.tag('div', {className: 'leftListItemText'});
+    this.label.$count = dom.tag('div', {className: 'theme-icon'},
+        dom.tag('div', {className: 'theme-counter'},
+            dom.tag('div')
         )
     );
     this.label.$count.style.visibility = 'hidden';
-    this.label.$end = dom.tag('div', {className: 'theme-icon-more theme-item-more-box'});
     // set title to left panel item
     if ( config.list.data && config.list.data.length && config.list.data[0].title ) {
         this.label.$text.innerText = config.list.data[0].title;
@@ -116,9 +113,9 @@ function ModalCheckList ( config ) {
     // parent constructor call
     Modal.call(this, config);
 
-    self.$header.appendChild(dom.tag('div', {className: 'amountWrapper'},
-        dom.tag('div', {className: 'theme-item-count'},
-            self.$titleCount = dom.tag('div', {className: 'amount'},
+    self.$header.appendChild(dom.tag('div', {className: 'theme-icon'},
+        dom.tag('div', {className: 'theme-counter'},
+            self.$titleCount = dom.tag('div', {},
                 config.list.data.length ? config.list.data.length - 1 : 0
             )
         )
@@ -177,40 +174,6 @@ function ModalCheckList ( config ) {
             self.label.$icon.classList.add('active');
         }
     });
-
-    function renderItem ( $item, data ) {
-        var table   = document.createElement('table'),
-            tr      = document.createElement('tr'),
-            td      = document.createElement('td'),
-            wrapper = document.createElement('div'),
-            check   = new CheckBox({
-                value: data.state || false
-            });
-
-        if ( this.data[0] === $item.data ) {  // set underline for first item
-            wrapper.classList.add('theme-header');
-        }
-
-        $item.innerHTML = '';
-
-        table.appendChild(tr);
-
-        td.appendChild(check.$node);
-        td.className = 'checkBoxWrapper';
-        tr.appendChild(td);
-
-        td = document.createElement('td');
-        td.className = 'title';
-        td.innerText = data.title || '';
-        tr.appendChild(td);
-
-        $item.checkBox = check;
-        $item.state = check.value;
-        $item.value = data.value;
-
-        wrapper.appendChild(table);
-        $item.appendChild(wrapper);
-    }
 }
 
 
@@ -234,8 +197,6 @@ ModalCheckList.prototype.getListItem = function () {
 
     elements.push(this.label.$text);
     elements.push(this.label.$count);
-    elements.push(this.label.$end);
-
 
     return elements;
 };

@@ -93,3 +93,11 @@
                 position: absolute;
                 top: 0;
                 left: 0; }
+    .mag-component-modal-check-list .header > .theme-icon {
+        display: table-cell;
+        color: red; }
+
+.leftListItemText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }

@@ -4,14 +4,23 @@
 @import "body";
 @import "../node_modules/stb-component/sass/main";
 @import "../node_modules/mag-component-modal/sass/main";
-//@import "../node_modules/mag-component-check-list/sass/main";
 
 .mag-component-modal-check-list {
     @include stb-component-release;
     @include mag-component-modal;
-    //@include mag-component-check-list;
+
+    .header > .theme-icon {
+        display:table-cell;
+        color:red;
+    }
 
     @if $DEVELOP {
         @include stb-component-develop;
     }
+}
+
+.leftListItemText {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
