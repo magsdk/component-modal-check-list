@@ -99,5 +99,19 @@
                 position: absolute;
                 top: 0;
                 left: 0; }
+    .mag-component-modal-check-list > div.alignBox > div > div.header {
+        display: table;
+        width: 100%; }
+        .mag-component-modal-check-list > div.alignBox > div > div.header > .theme-icon {
+            display: table-cell;
+            text-align: left; }
+        .mag-component-modal-check-list > div.alignBox > div > div.header > .text {
+            display: table-cell;
+            text-align: left; }
     .mag-component-modal-check-list.focus {
         outline: 1px dashed red; }
+
+.leftListItemText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }

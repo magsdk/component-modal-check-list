@@ -160,16 +160,24 @@ function ModalCheckList ( config ) {
             //console.log('case 2 : set to not "all"');
             data[0].state = false;
             this.setData({data: data, focusIndex: this.$focusItem.index});
-            self.label.$count.style.visibility = 'inherit';
-            self.label.$count.firstChild.firstChild.innerText = marked.length - 1;
+            if ( marked.length - 2 > 0 ) {
+                self.label.$count.style.visibility = 'inherit';
+                self.label.$count.firstChild.firstChild.innerText = marked.length - 1;
+            } else {
+                self.label.$count.style.visibility = 'hidden';
+            }
             self.label.$text.innerText = marked[1].title + (marked[2] ? ', ' + marked[2].title : '');
             self.label.$icon.classList.add('active');
             return;
         }
         if ( marked.length ) {
             //console.log('case 3 : set');
-            self.label.$count.style.visibility = 'inherit';
-            self.label.$count.firstChild.firstChild.innerText = marked.length;
+            if ( marked.length - 2 > 0 ) {
+                self.label.$count.style.visibility = 'inherit';
+                self.label.$count.firstChild.firstChild.innerText = '+' + (marked.length - 2);
+            } else {
+                self.label.$count.style.visibility = 'hidden';
+            }
             self.label.$text.innerText = marked[0].title + (marked[1] ? ', ' + marked[1].title : '');
             self.label.$icon.classList.add('active');
         }
