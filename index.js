@@ -8,16 +8,16 @@
 'use strict';
 
 
-var StbComponentModal = require('mag-component-modal'),
-    CheckList         = require('mag-component-check-list'),
-    Component         = require('stb-component');
+var Modal     = require('mag-component-modal'),
+    CheckList = require('mag-component-check-list'),
+    CheckBox  = require('spa-component-checkbox');
 
 
 /**
  * Modal window implementation.
  *
  * @constructor
- * @extends StbComponentModal
+ * @extends Modal
  *
  * @param {Object} [config={}] init parameters (all inherited from the parent)
  * @param {Object} [config.title] message title
@@ -35,11 +35,17 @@ var StbComponentModal = require('mag-component-modal'),
  *             page.panelSet.focus();
  *         }
  *     },
+ *     labels:{
+ *         icon:a,
+ *         text:b,
+ *         count:c
+ *     },
  *     list: {
  *         size: 2,
  *         data: [
- *             {state: true, title: 'Video', value: 1},
- *             {state: false, title: 'Music', value: 2}
+ *             {state: true, title: 'All content', value: 1},
+ *             {state: false, title: 'Music', value: 2},
+ *             {state: false, title: 'Video', value: 3}
  *         ]
  *     }
  * });
@@ -47,102 +53,150 @@ var StbComponentModal = require('mag-component-modal'),
  */
 
 
-function Modal ( config ) {
-    var $overlay, $body,
-        self = this;
+function ModalCheckList ( config ) {
+    var self = this;
 
     // sanitize
     config = config || {};
-    config.events = config.events || {};
+    config.list = config.list || {};
+    config.list.render = config.list.render || renderItem;
+    config.list.events = config.list.events || {};
+    config.children = config.children || [];
+    config.labels = config.labels || {};
 
     if ( DEVELOP ) {
-        if ( typeof config !== 'object' ) {
-            throw new Error(__filename + ': wrong config type');
-        }
-        // init parameters checks
-        if ( config.icon && typeof config.icon !== 'string' ) {
-            throw new Error(__filename + ': wrong or empty config.icon');
-        }
-        if ( config.title && typeof config.title !== 'string' ) {
-            throw new Error(__filename + ': wrong or empty config.title');
-        }
-        if ( 'className' in config && (!config.className || typeof config.className !== 'string') ) {
-            throw new Error(__filename + ': wrong or empty config.className');
-        }
-        if ( config.$body ) {
-            throw new Error(__filename + ': config.$body should not be provided in Modal manually');
-        }
+//        if ( typeof config !== 'object' ) {
+//            throw new Error(__filename + ': wrong config type');
+//        }
+//        // init parameters checks
+//        if ( config.icon && typeof config.icon !== 'string' ) {
+//            throw new Error(__filename + ': wrong or empty config.icon');
+//        }
+//        if ( config.title && typeof config.title !== 'string' ) {
+//            throw new Error(__filename + ': wrong or empty config.title');
+//        }
+//        if ( 'className' in config && (!config.className || typeof config.className !== 'string') ) {
+//            throw new Error(__filename + ': wrong or empty config.className');
+//        }
+//        if ( config.$body ) {
+//            throw new Error(__filename + ': config.$body should not be provided in Modal manually');
+//        }
     }
 
-    // usually can't accept focus
-    config.focusable = config.focusable || false;
-    // hide by default
-    config.visible = config.visible || false;
-    // add default close by click
-    config.events.click = config.events.click || function () { self.hide(); };
+    this.labels = {
+        icon: config.labels.icon,
+        text: config.labels.text,
+        count: config.labels.count
+    };
+
+    this.list = new CheckList(config.list);
+    config.children.push(this.list);
+
 
     // parent constructor call
-    StbComponentModal.call(this, config);
+    Modal.call(this, config);
 
-    // add table-cell wrappers
-    this.$node.appendChild(document.createElement('div'));
-    this.$node.firstChild.classList.add('alignBox');
-    this.$node.firstChild.appendChild(document.createElement('div'));
+    // rewrite onclick listener
+    this.list.events['click:item'] = undefined;
+    this.list.addListener('click:item', function ( event ) {
+        var item   = event.$item,
+            marked = [],
+            data   = self.list.data,
+            title, count, i;
 
-    // add header div
-    this.$header = document.createElement('div');
-    this.$header.className = 'header';
+        item.checkBox.set(!item.checkBox.value);
+        item.state = item.checkBox.value;
+        data[item.index].state = item.checkBox.value;
 
-    // insert caption placeholder
-    this.$text = this.$header.appendChild(document.createElement('div'));
-    this.$text.classList.add('text');
-    this.$text.innerText = config.title || '';
+        // go through list to collect selected items
+        for ( i = 0; i < data.length; i++ ) {
+            console.log('i: ' + i + ' ?: ' + data[i].state);
+            if ( data[i].state ) {
+                marked.push(data[i]);
+            }
+        }
 
-    // optional icon
-    if ( config.icon ) {
-        this.$icon = this.$header.appendChild(document.createElement('div'));
-        this.$icon.className = 'icon ' + config.icon;
+        // 1) if none was set, set "All_items" as selected
+        // 2) if "All_items" was set remove from others
+        // 3) if all except "All_items" was selected remove from others and set to "All_items"
+        if (
+            !marked.length ||
+            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 ||
+            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1
+        ) {
+            console.log('case 1 : set to "all"');
+            for ( i = 0; i < data.length; i++ ) {
+                data[i].state = i === 0; // mark only first
+            }
+            this.setData({data: data, focusIndex: this.$focusItem.index});
+            self.labels.text.innerText = data[0].title;
+            self.labels.icon.classList.remove('active');
+            self.labels.count.innerText = 0;
+            return;
+        }
+        //  if item and "All_items" item was set remove from "All_items"
+        if ( marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index !== 0 ) {
+            console.log('case 2 : set to not "all"');
+            data[0].state = false;
+            this.setData({data: data, focusIndex: this.$focusItem.index});
+            self.labels.count.innerText = marked.length - 1;
+            self.labels.text.innerText = marked[1].title + (marked[2] ? ', ' + marked[2].title : '');
+            self.labels.icon.classList.add('active');
+            return;
+        }
+        // renew selected items info
+        if ( marked.length ) {
+            console.log('case 3 : set');
+            self.labels.count.innerText = marked.length;
+            self.labels.text.innerText = marked[0].title + (marked[1] ? ', ' + marked[1].title : '');
+            self.labels.icon.classList.add('active');
+        }
+    });
+
+    function renderItem ( $item, data ) {
+        var table   = document.createElement('table'),
+            tr      = document.createElement('tr'),
+            td      = document.createElement('td'),
+            wrapper = document.createElement('div'),
+            check   = new CheckBox({
+                value: data.state || false
+            });
+
+        if ( this.data[0] === $item.data ) { // set underline to first item
+            wrapper.classList.add('theme-header');
+        }
+
+        $item.innerHTML = '';
+
+        table.appendChild(tr);
+
+        td.appendChild(check.$node);
+        td.className = 'checkBoxWrapper';
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.className = 'title';
+        td.innerText = data.title || '';
+        tr.appendChild(td);
+
+        $item.checkBox = check;
+
+        $item.state = check.value;
+        $item.value = data.value;
+
+        wrapper.appendChild(table);
+        $item.appendChild(wrapper);
     }
-
-    $overlay = document.createElement('div');
-    $overlay.className = 'overlay';
-
-    // add to dom
-    $body = this.$body.parentNode.removeChild(this.$body); // add body wrapper
-    this.$node.firstChild.firstChild.appendChild(this.$header);
-    this.$node.firstChild.firstChild.appendChild($body);
-    this.$node.firstChild.firstChild.appendChild($overlay);
 }
 
 
 // inheritance
-Modal.prototype = Object.create(StbComponentModal.prototype);
-Modal.prototype.constructor = Modal;
+ModalCheckList.prototype = Object.create(Modal.prototype);
+ModalCheckList.prototype.constructor = ModalCheckList;
 
 // set component name
-Modal.prototype.name = 'mag-component-modal';
-
-
-/**
- * Redefine default component focus to set additional css
- */
-Modal.prototype.focus = function () {
-    this.$node.classList.add('active');
-    StbComponentModal.prototype.focus.call(this);
-    if ( this.children[0] && this.children[0] instanceof Component ) {
-        this.children[0].focus();
-    }
-};
-
-
-/**
- * Blur message
- */
-Modal.prototype.blur = function () {
-    this.$node.classList.remove('active');
-    StbComponentModal.prototype.blur.call(this);
-};
+ModalCheckList.prototype.name = 'mag-component-modal mag-component-modal-check-list';
 
 
 // public
-module.exports = Modal;
+module.exports = ModalCheckList;

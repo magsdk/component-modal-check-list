@@ -4,12 +4,12 @@
 @import "body";
 @import "../node_modules/stb-component/sass/main";
 @import "../node_modules/mag-component-modal/sass/main";
-@import "../node_modules/mag-component-check-list/sass/main";
+//@import "../node_modules/mag-component-check-list/sass/main";
 
-.mag-component-modal {
+.mag-component-modal-check-list {
     @include stb-component-release;
     @include mag-component-modal;
-    @include mag-component-check-list;
+    //@include mag-component-check-list;
 
     @if $DEVELOP {
         @include stb-component-develop;

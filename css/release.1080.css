@@ -45,3 +45,51 @@
                 position: absolute;
                 top: 0;
                 left: 0; }
+
+.mag-component-modal-check-list {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: table;
+    z-index: 10; }
+    .mag-component-modal-check-list.hidden {
+        display: none; }
+    .mag-component-modal-check-list.active > div > div > div.overlay {
+        display: none; }
+    .mag-component-modal-check-list > div {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center; }
+        .mag-component-modal-check-list > div > div {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            max-width: 80%;
+            min-width: 399.375px;
+            max-height: 80%; }
+            .mag-component-modal-check-list > div > div > div.header {
+                height: 105px;
+                line-height: 105px;
+                font-size: 36px;
+                padding: 0 30px; }
+                .mag-component-modal-check-list > div > div > div.header .text {
+                    display: table-cell;
+                    vertical-align: middle;
+                    text-align: center; }
+                    .mag-component-modal-check-list > div > div > div.header .text:empty {
+                        padding: 0; }
+            .mag-component-modal-check-list > div > div > div.body > div .item {
+                height: 90px;
+                line-height: 90px;
+                padding: 0 30px; }
+            .mag-component-modal-check-list > div > div > div.overlay {
+                display: block;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0; }
