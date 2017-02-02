@@ -9,9 +9,18 @@
     @include stb-component-release;
     @include mag-component-modal;
 
-    .header > .theme-icon {
-        display:table-cell;
-        color:red;
+    & > div.alignBox > div > div.header {
+        display:table;
+        width:100%;
+
+        & > .theme-icon {
+            display:table-cell;
+            text-align:left;
+        }
+        & > .text {
+            display:table-cell;
+            text-align:left;
+        }
     }
 
     @if $DEVELOP {
