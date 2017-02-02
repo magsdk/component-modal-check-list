@@ -11,6 +11,7 @@
 var Modal     = require('mag-component-modal'),
     List      = require('mag-component-list'),
     CheckList = require('mag-component-check-list'),
+    Scroll    = require('stb-component-scrollbar'),
     dom       = require('spa-dom');
 
 
@@ -99,6 +100,9 @@ function ModalCheckList ( config ) {
         this.label.$text.innerText = config.list.data[0].title;
     }
 
+    this.scroll = new Scroll({});
+    config.list.scroll = this.scroll;
+
     this.list = new CheckList(config.list);
 
     this.list.setData = function ( config ) {
@@ -108,6 +112,7 @@ function ModalCheckList ( config ) {
         }
     };
     config.children.push(this.list);
+    config.children.push(this.scroll);
 
 
     // parent constructor call
@@ -121,12 +126,20 @@ function ModalCheckList ( config ) {
         )
     ));
 
+    if ( config.list.data && config.list.data.length ) {
+        this.scroll.show();
+        this.scroll.init({realSize: config.list.data.length, viewSize: config.list.size || 5});
+    } else {
+        this.scroll.hide();
+    }
+
     // rewrite onclick listener
     this.list.events['click:item'] = undefined;
     this.list.addListener('click:item', function ( event ) {
         var item   = event.$item,
             marked = [],
-            data   = self.list.data || [];
+            data   = self.list.data || [],
+            count;
 
         item.checkBox.set(!item.checkBox.value);
         item.state = item.checkBox.value;
@@ -141,44 +154,50 @@ function ModalCheckList ( config ) {
         }
 
         if (
-            !marked.length || // if none set "All" as selected
-            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 || // if "All" was set (reset others)
-            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1  // if all except "All"  was selected
+            !marked.length || // if none set "All cats" as selected
+            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 || // if "All cats" was set (reset others)
+            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1  // if all except "All" was selected
         ) {
-            //console.log('case 1 : set to "all"');
             for ( i = 0; i < data.length; i++ ) {
                 data[i].state = i === 0; // mark only first
             }
             this.setData({data: data, focusIndex: this.$focusItem.index});
-            self.label.$text.innerText = data[0].title;
             self.label.$icon.classList.remove('active');
+            self.label.$text.innerText = data[0].title;
             self.label.$count.style.visibility = 'hidden';
             return;
         }
-        //  if "All" item selected (set to "all" and remove from others)
+        //  if "All cats" item selected (set "selected" to "all cats" and remove from others)
         if ( marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index !== 0 ) {
-            //console.log('case 2 : set to not "all"');
             data[0].state = false;
             this.setData({data: data, focusIndex: this.$focusItem.index});
-            if ( marked.length - 2 > 0 ) {
-                self.label.$count.style.visibility = 'inherit';
-                self.label.$count.firstChild.firstChild.innerText = marked.length - 1;
-            } else {
-                self.label.$count.style.visibility = 'hidden';
-            }
-            self.label.$text.innerText = marked[1].title + (marked[2] ? ', ' + marked[2].title : '');
             self.label.$icon.classList.add('active');
+            self.label.$text.innerText = marked[1].title;
+            self.label.$count.style.visibility = 'hidden';
             return;
         }
+        // some normal items were selected or unselected
         if ( marked.length ) {
-            //console.log('case 3 : set');
-            if ( marked.length - 2 > 0 ) {
-                self.label.$count.style.visibility = 'inherit';
-                self.label.$count.firstChild.firstChild.innerText = '+' + (marked.length - 2);
+            if ( marked.length > 1 ) {
+                self.label.$text.innerText = marked[0].title + ', ' + marked[1].title;
+                count = marked.length - 2;
+
+                // If $text element was overflowed because of too long titles remove one title from $text and increment count.
+                if ( self.label.$text.scrollWidth > self.label.$text.clientWidth ) {
+                    self.label.$text.innerText = marked[0].title;
+                    count = marked.length - 1;
+                }
+
+                if ( count ) {
+                    self.label.$count.style.visibility = 'inherit';
+                    self.label.$count.firstChild.firstChild.innerText = '+' + count;
+                } else {
+                    self.label.$count.style.visibility = 'hidden';
+                }
             } else {
+                self.label.$text.innerText = marked[0].title;
                 self.label.$count.style.visibility = 'hidden';
             }
-            self.label.$text.innerText = marked[0].title + (marked[1] ? ', ' + marked[1].title : '');
             self.label.$icon.classList.add('active');
         }
     });

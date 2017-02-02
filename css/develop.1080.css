@@ -36,10 +36,12 @@
                     text-align: center; }
                     .mag-component-modal > div > div > div.header .text:empty {
                         padding: 0; }
-            .mag-component-modal > div > div > div.body > div .item {
-                height: 90px;
-                line-height: 90px;
-                padding: 0 30px; }
+            .mag-component-modal > div > div > div.body {
+                position: relative; }
+                .mag-component-modal > div > div > div.body > div .item {
+                    height: 90px;
+                    line-height: 90px;
+                    padding: 0 30px; }
             .mag-component-modal > div > div > div.overlay {
                 display: block;
                 width: 100%;
@@ -88,10 +90,12 @@
                     text-align: center; }
                     .mag-component-modal-check-list > div > div > div.header .text:empty {
                         padding: 0; }
-            .mag-component-modal-check-list > div > div > div.body > div .item {
-                height: 90px;
-                line-height: 90px;
-                padding: 0 30px; }
+            .mag-component-modal-check-list > div > div > div.body {
+                position: relative; }
+                .mag-component-modal-check-list > div > div > div.body > div .item {
+                    height: 90px;
+                    line-height: 90px;
+                    padding: 0 30px; }
             .mag-component-modal-check-list > div > div > div.overlay {
                 display: block;
                 width: 100%;
@@ -108,10 +112,13 @@
         .mag-component-modal-check-list > div.alignBox > div > div.header > .text {
             display: table-cell;
             text-align: left; }
+    .mag-component-modal-check-list .stb-component-scrollbar {
+        position: absolute; }
     .mag-component-modal-check-list.focus {
         outline: 1px dashed red; }
 
 .leftListItemText {
+    max-width: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap; }
