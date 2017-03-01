@@ -1,6 +1,6 @@
 /**
  * @license The MIT License (MIT)
- * @copyright Fedotov <bas.jsdev@gmail.com>
+ * @copyright Dmitry Fedotov <bas.jsdev@gmail.com>
  */
 
 /* eslint no-path-concat: 0 */
