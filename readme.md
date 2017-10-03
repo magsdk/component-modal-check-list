@@ -62,13 +62,6 @@ leftPanel.add(leftPanelList = new LayoutList({
 }));
 ```
 
-Add component to the page and show it:
-
-```js
-page.add(page.modal);
-page.modal.show();
-```
-
 
 ## Development mode ##
 
