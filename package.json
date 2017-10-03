@@ -1,6 +1,6 @@
 {
   "name": "mag-component-modal-check-list",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Modal message with check list.",
   "author": {
     "name": "Dmitry Fedotov",
@@ -19,6 +19,7 @@
   "dependencies": {
     "mag-component-check-list": "1.*.*",
     "mag-component-modal": "1.*.*",
+    "stb-component-scrollbar": "1.*.*",
     "stb-component": "1.*.*"
   },
   "devDependencies": {
