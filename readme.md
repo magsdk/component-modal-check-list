@@ -46,6 +46,7 @@ var modalCheckList = new ModalCheckList({
         ]
     }
 });
+
 page.add(modalCheckList);
 
 leftPanel.add(leftPanelList = new LayoutList({

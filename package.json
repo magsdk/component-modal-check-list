@@ -1,40 +1,42 @@
 {
-  "name": "mag-component-modal-check-list",
-  "version": "1.1.5",
-  "description": "Modal message with check list.",
-  "author": {
-    "name": "Dmitry Fedotov",
-    "email": "bas.jsdev@gmail.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@192.168.1.222:/web/magsdk/component-modal-check-list"
-  },
-  "scripts": {
-    "sass": "node-sass --indent-width 4 --include-path ../../.. sass/develop.480.scss css/develop.480.css && node-sass --indent-width 4 --include-path ../../.. sass/release.480.scss css/release.480.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.576.scss css/develop.576.css && node-sass --indent-width 4 --include-path ../../.. sass/release.576.scss css/release.576.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.720.scss css/develop.720.css && node-sass --indent-width 4 --include-path ../../.. sass/release.720.scss css/release.720.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.1080.scss css/develop.1080.css && node-sass --indent-width 4 --include-path ../../.. sass/release.1080.scss css/release.1080.css",
-    "lint": "eslint .",
-    "test": "npm run lint",
-    "jsdoc": "jsdoc --destination doc *.js readme.md"
-  },
-  "dependencies": {
-    "mag-component-check-list": "1.*.*",
-    "mag-component-modal": "1.*.*",
-    "stb-component-scrollbar": "1.*.*",
-    "stb-component": "1.*.*"
-  },
-  "devDependencies": {
-    "eslint": "3.*.*",
-    "mag-eslint-config": "1.*.*"
-  },
-  "keywords": [
-    "mag",
-    "magsdk",
-    "framework",
-    "visual",
-    "component",
-    "modal",
-    "check",
-    "list"
-  ],
-  "license": "MIT"
+    "name": "mag-component-modal-check-list",
+    "version": "1.1.6",
+    "description": "Modal message with check list.",
+    "author": {
+        "name": "Dmitry Fedotov",
+        "email": "bas.jsdev@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:magsdk/component-modal-check-list.git"
+    },
+    "scripts": {
+        "sass": "node-sass --indent-width 4 --include-path ../../.. sass/develop.480.scss css/develop.480.css && node-sass --indent-width 4 --include-path ../../.. sass/release.480.scss css/release.480.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.576.scss css/develop.576.css && node-sass --indent-width 4 --include-path ../../.. sass/release.576.scss css/release.576.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.720.scss css/develop.720.css && node-sass --indent-width 4 --include-path ../../.. sass/release.720.scss css/release.720.css && node-sass --indent-width 4 --include-path ../../.. sass/develop.1080.scss css/develop.1080.css && node-sass --indent-width 4 --include-path ../../.. sass/release.1080.scss css/release.1080.css",
+        "lint": "eslint .",
+        "test": "npm run lint",
+        "jsdoc": "jsdoc --destination doc *.js readme.md"
+    },
+    "dependencies": {
+        "mag-component-check-list": "1.*.*",
+        "mag-component-modal": "1.*.*",
+        "mag-component-list": "1.*.*",
+        "stb-component-scrollbar": "1.*.*",
+        "stb-component": "1.*.*",
+        "spa-dom": "*"
+    },
+    "devDependencies": {
+        "eslint": "3.*.*",
+        "mag-eslint-config": "1.*.*"
+    },
+    "keywords": [
+        "mag",
+        "magsdk",
+        "framework",
+        "visual",
+        "component",
+        "modal",
+        "check",
+        "list"
+    ],
+    "license": "MIT"
 }

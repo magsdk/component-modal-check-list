@@ -2,3 +2,5 @@
 .github
 .idea
 .travis.yml
+sass
+develop.*

@@ -3,7 +3,6 @@
  * @copyright Dmitry Fedotov <bas.jsdev@gmail.com>
  */
 
-/* eslint no-path-concat: 0 */
 
 'use strict';
 
@@ -23,7 +22,7 @@ var Modal     = require('mag-component-modal'),
  *
  * @param {Object} [config={}] init parameters (all inherited from the parent)
  * @param {Object} [config.title] message title
- * @param {Object} [config.className] message classname
+ * @param {Object} [config.className] message class name
  * @param {Object} [config.icon] icon at header
  * @param {Object} [config.visible] visibility flag
  * @param {Object} [config.children] content (inherited from the parent)
@@ -48,6 +47,7 @@ var Modal     = require('mag-component-modal'),
  *         ]
  *     }
  * });
+ *
  * page.add(modalCheckList);
  *
  * leftPanel.add(leftPanelList = new LayoutList({
@@ -139,15 +139,14 @@ function ModalCheckList ( config ) {
         var item   = event.$item,
             marked = [],
             data   = self.list.data || [],
-            count;
+            count, i;
 
         item.checkBox.set(!item.checkBox.value);
         item.state = item.checkBox.value;
         data[item.index].state = item.checkBox.value;
 
         // go through list to collect selected items
-        for ( var i = 0; i < data.length; i++ ) {
-            //console.log('i: ' + i + ' ?: ' + data[i].state);
+        for ( i = 0; i < data.length; i++ ) {
             if ( data[i].state ) {
                 marked.push(data[i]);
             }
@@ -165,6 +164,7 @@ function ModalCheckList ( config ) {
             self.label.$icon.classList.remove('active');
             self.label.$text.innerText = data[0].title;
             self.label.$count.style.visibility = 'hidden';
+
             return;
         }
         //  if "All cats" item selected (set "selected" to "all cats" and remove from others)
@@ -174,6 +174,7 @@ function ModalCheckList ( config ) {
             self.label.$icon.classList.add('active');
             self.label.$text.innerText = marked[1].title;
             self.label.$count.style.visibility = 'hidden';
+
             return;
         }
         // some normal items were selected or unselected
