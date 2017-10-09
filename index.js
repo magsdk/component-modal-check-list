@@ -3,6 +3,7 @@
  * @copyright Dmitry Fedotov <bas.jsdev@gmail.com>
  */
 
+/* eslint no-path-concat: 0 */
 
 'use strict';
 
@@ -139,16 +140,16 @@ function ModalCheckList ( config ) {
         var item   = event.$item,
             marked = [],
             data   = self.list.data || [],
-            count, i;
+            count, index;
 
         item.checkBox.set(!item.checkBox.value);
         item.state = item.checkBox.value;
         data[item.index].state = item.checkBox.value;
 
         // go through list to collect selected items
-        for ( i = 0; i < data.length; i++ ) {
-            if ( data[i].state ) {
-                marked.push(data[i]);
+        for ( index = 0; index < data.length; index++ ) {
+            if ( data[index].state ) {
+                marked.push(data[index]);
             }
         }
 
@@ -157,10 +158,10 @@ function ModalCheckList ( config ) {
             marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 || // if "All cats" was set (reset others)
             marked.indexOf(data[0]) === -1 && marked.length === data.length - 1  // if all except "All" was selected
         ) {
-            for ( i = 0; i < data.length; i++ ) {
-                data[i].state = i === 0; // mark only first
+            for ( index = 0; index < data.length; index++ ) {
+                data[index].state = index === 0; // mark only first
             }
-            this.setData({data: data, focusIndex: this.$focusItem.index});
+            self.list.setData({data: data, focusIndex: self.list.$focusItem.index});
             self.label.$icon.classList.remove('active');
             self.label.$text.innerText = data[0].title;
             self.label.$count.style.visibility = 'hidden';
@@ -170,7 +171,7 @@ function ModalCheckList ( config ) {
         //  if "All cats" item selected (set "selected" to "all cats" and remove from others)
         if ( marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index !== 0 ) {
             data[0].state = false;
-            this.setData({data: data, focusIndex: this.$focusItem.index});
+            self.list.setData({data: data, focusIndex: self.list.$focusItem.index});
             self.label.$icon.classList.add('active');
             self.label.$text.innerText = marked[1].title;
             self.label.$count.style.visibility = 'hidden';
