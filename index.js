@@ -142,10 +142,6 @@ function ModalCheckList ( config ) {
             data   = self.list.data || [],
             count, index;
 
-        item.checkBox.set(!item.checkBox.value);
-        item.state = item.checkBox.value;
-        data[item.index].state = item.checkBox.value;
-
         // go through list to collect selected items
         for ( index = 0; index < data.length; index++ ) {
             if ( data[index].state ) {
