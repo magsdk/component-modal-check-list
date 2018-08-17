@@ -29,9 +29,3 @@
         @include stb-component-develop;
     }
 }
-.leftListItemText {
-    max-width:30px; // browser bug fix: size number doesn't matter
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}

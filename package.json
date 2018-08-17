@@ -17,7 +17,7 @@
         "jsdoc": "jsdoc --destination docs *.js readme.md"
     },
     "dependencies": {
-        "mag-component-check-list": "^1.1.1",
+        "mag-component-check-list": "^1.2.2",
         "mag-component-list": "^1.2.1",
         "mag-component-modal": "^1.0.11",
         "spa-dom": "^1.4.0",

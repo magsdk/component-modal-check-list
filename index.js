@@ -9,7 +9,6 @@
 
 
 var Modal     = require('mag-component-modal'),
-    List      = require('mag-component-list'),
     CheckList = require('mag-component-check-list'),
     Scroll    = require('stb-component-scrollbar'),
     dom       = require('spa-dom');
@@ -22,13 +21,13 @@ var Modal     = require('mag-component-modal'),
  * @extends Modal
  *
  * @param {Object} [config={}] init parameters (all inherited from the parent)
- * @param {Object} [config.title] message title
- * @param {Object} [config.className] message class name
- * @param {Object} [config.icon] icon at header
- * @param {Object} [config.visible] visibility flag
- * @param {Object} [config.children] content (inherited from the parent)
+ * @param {String} [config.title] message title
+ * @param {boolean} [config.titleCounter] counter in title
+ * @param {String} [config.className] message class name
+ * @param {String} [config.icon] icon at header
+ * @param {boolean} [config.visible] visibility flag
+ * @param {Array} [config.children] content (inherited from the parent)
  * @param {Object} [config.list] all init parameters for mag-component-check-list constructor
- * @param {Object} [config.labelIcon] left panel list item icon
  *
  * @example
  * var modalCheckList = new ModalCheckList({
@@ -38,11 +37,10 @@ var Modal     = require('mag-component-modal'),
  *             page.panelSet.focus();
  *         }
  *     },
- *     labelIcon: 'theme-icon-filter',
  *     list: {
  *         size: 2,
  *         data: [
- *             {state: true, title: 'All content', value: 1},
+ *             {state: true, title: 'All content', value: 1, unique: true},
  *             {state: false, title: 'Music', value: 2},
  *             {state: false, title: 'Video', value: 3}
  *         ]
@@ -68,7 +66,8 @@ var Modal     = require('mag-component-modal'),
 
 
 function ModalCheckList ( config ) {
-    var self = this;
+    var self = this,
+        index, listClickEvents;
 
     if ( DEVELOP ) {
         if ( typeof config !== 'object' ) {
@@ -85,33 +84,34 @@ function ModalCheckList ( config ) {
     config.list.events = config.list.events || {};
     config.children = config.children || [];
 
-    this.label = {};
-    if ( config.labelIcon ) {
-        this.label.$icon = dom.tag('div', {className: 'theme-icon ' + config.labelIcon});
-    }
-    this.label.$text = dom.tag('div', {className: 'leftListItemText'});
-    this.label.$count = dom.tag('div', {className: 'theme-icon'},
-        dom.tag('div', {className: 'theme-counter'},
-            dom.tag('div')
-        )
-    );
-    this.label.$count.style.visibility = 'hidden';
-    // set title to left panel item
-    if ( config.list.data && config.list.data.length && config.list.data[0].title ) {
-        this.label.$text.innerText = config.list.data[0].title;
-    }
-
     this.scroll = new Scroll({});
     config.list.scroll = this.scroll;
 
     this.list = new CheckList(config.list);
 
-    this.list.setData = function ( config ) {
-        List.prototype.setData.call(self.list, config);
-        if ( self.$titleCount ) {
-            self.$titleCount.innerText = config.data.length ? config.data.length - 1 : 0;
+    for ( index = 0; index < this.list.data.length; index++ ) {
+        if ( this.list.data[index].unique ) {
+            this.uniqueItem = {
+                data: this.list.data[index],
+                index: index
+            };
+
+            break;
         }
-    };
+    }
+
+    if ( this.uniqueItem && this.uniqueItem.data.state && this.list.checkedData.length > 1 ) {
+        this.list.clearChecked();
+        if ( this.uniqueItem.index < this.list.$node.children.length + this.list.viewIndex && this.uniqueItem.index < this.list.viewIndex ) {
+            this.list.changeState(this.list.$node.children[this.uniqueItem.index - this.list.viewIndex]);
+        } else {
+            this.uniqueItem.data.state = true;
+            this.list.checkedData.push(this.uniqueItem.data);
+        }
+    }
+
+    this.checkedData = this.list.checkedData;
+
     config.children.push(this.list);
     config.children.push(this.scroll);
 
@@ -119,13 +119,28 @@ function ModalCheckList ( config ) {
     // parent constructor call
     Modal.call(this, config);
 
-    self.$header.appendChild(dom.tag('div', {className: 'theme-icon'},
-        dom.tag('div', {className: 'theme-counter'},
-            self.$titleCount = dom.tag('div', {},
-                config.list.data.length ? config.list.data.length - 1 : 0
+    if ( config.titleCounter ) {
+        this.$header.appendChild(
+            dom.tag(
+                'div',
+                {className: 'theme-icon'},
+                dom.tag(
+                    'div',
+                    {className: 'theme-counter'},
+                    self.$titleCount = dom.tag(
+                        'div',
+                        {},
+                        this.list.data.length && self.uniqueItem ?  this.list.data.length - 1 :  this.list.data.length
+                    )
+                )
             )
-        )
-    ));
+        );
+
+        this.list.setData = function ( data ) {
+            CheckList.prototype.setData.call(self.list, data);
+            self.$titleCount.innerText = data.data.length && self.uniqueItem ? data.data.length - 1 : data.data.length;
+        };
+    }
 
     if ( config.list.data && config.list.data.length ) {
         this.scroll.show();
@@ -134,71 +149,71 @@ function ModalCheckList ( config ) {
         this.scroll.hide();
     }
 
-    // rewrite onclick listener
-    this.list.events['click:item'] = undefined;
-    this.list.addListener('click:item', function ( event ) {
-        var item   = event.$item,
-            marked = [],
-            data   = self.list.data || [],
-            count, index;
+    this.addListener('focus',
+        /**
+        * @this ModalCheckList
+        */
+        function () {
+            this.list.focus();
+        });
 
-        // go through list to collect selected items
-        for ( index = 0; index < data.length; index++ ) {
-            if ( data[index].state ) {
-                marked.push(data[index]);
-            }
-        }
+    listClickEvents = this.list.events['click:item'] || [];
+    this.list.events['click:item'] = [];
+    this.list.addListener('click:item',
+        /**
+         * @param {Object} event click event
+         *
+         * @this ModalCheckList.list
+         */
+        function ( event ) {
+            var $item   = event.$item,
+                data = $item.data;
 
-        if (
-            !marked.length || // if none set "All cats" as selected
-            marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index === 0 || // if "All cats" was set (reset others)
-            marked.indexOf(data[0]) === -1 && marked.length === data.length - 1  // if all except "All" was selected
-        ) {
-            for ( index = 0; index < data.length; index++ ) {
-                data[index].state = index === 0; // mark only first
-            }
-            self.list.setData({data: data, focusIndex: self.list.$focusItem.index});
-            self.label.$icon.classList.remove('active');
-            self.label.$text.innerText = data[0].title;
-            self.label.$count.style.visibility = 'hidden';
+            if ( self.uniqueItem ) {
+                if ( data.unique && !data.state ) {
+                    this.changeState($item);
 
-            return;
-        }
-        //  if "All cats" item selected (set "selected" to "all cats" and remove from others)
-        if ( marked.indexOf(data[0]) !== -1 && marked.length > 1 && item.index !== 0 ) {
-            data[0].state = false;
-            self.list.setData({data: data, focusIndex: self.list.$focusItem.index});
-            self.label.$icon.classList.add('active');
-            self.label.$text.innerText = marked[1].title;
-            self.label.$count.style.visibility = 'hidden';
-
-            return;
-        }
-        // some normal items were selected or unselected
-        if ( marked.length ) {
-            if ( marked.length > 1 ) {
-                self.label.$text.innerText = marked[0].title + ', ' + marked[1].title;
-                count = marked.length - 2;
-
-                // If $text element was overflowed because of too long titles remove one title from $text and increment count.
-                if ( self.label.$text.scrollWidth > self.label.$text.clientWidth ) {
-                    self.label.$text.innerText = marked[0].title;
-                    count = marked.length - 1;
+                    return;
                 }
 
-                if ( count ) {
-                    self.label.$count.style.visibility = 'inherit';
-                    self.label.$count.firstChild.firstChild.innerText = '+' + count;
+                if ( data.unique ) {
+                    this.clearChecked();
+                    this.changeState($item);
                 } else {
-                    self.label.$count.style.visibility = 'hidden';
+                    if ( self.uniqueItem.data.state ) {
+                        index = self.uniqueItem.index - this.viewIndex;
+                        if ( index < this.$node.children.length && index >= 0 ) {
+                            this.changeState(this.$node.children[index]);
+                        } else {
+                            self.uniqueItem.data.state = false;
+                            index = this.checkedData.indexOf(self.uniqueItem.data);
+                            if ( index !== -1 ) {
+                                this.checkedData.splice(index, 1);
+                            }
+                        }
+                    }
+
+                    if ( this.checkedData.length === this.data.length - 1 ) {
+                        this.clearChecked();
+                        index = self.uniqueItem.index - this.viewIndex;
+                        if ( index < this.$node.children.length && index > 0 ) {
+                            this.changeState(this.$node.children[index]);
+                        } else {
+                            self.uniqueItem.data.state = true;
+                            this.checkedData.push(self.uniqueItem.data);
+                        }
+                    }
                 }
-            } else {
-                self.label.$text.innerText = marked[0].title;
-                self.label.$count.style.visibility = 'hidden';
             }
-            self.label.$icon.classList.add('active');
-        }
-    });
+
+            for ( index = 0; index < listClickEvents.length; index++ ) {
+                listClickEvents[index].call(this, event);
+            }
+
+            self.checkedData = this.checkedData;
+
+            self.emit('checked:change', {checkedData: this.checkedData});
+        });
 }
 
 
@@ -209,21 +224,50 @@ ModalCheckList.prototype.constructor = ModalCheckList;
 // set component name
 ModalCheckList.prototype.name = 'mag-component-modal mag-component-modal-check-list';
 
-/**
- * Get list of dom elements for use in right panel list
- * @return {Array} elements prepared for right panel layout list
- */
-ModalCheckList.prototype.getListItem = function () {
-    var elements = [];
 
-    if ( this.label.$icon ) {
-        elements.push(this.label.$icon);
+/**
+ * Reset data to default state and render inner structures and HTML.
+ */
+ModalCheckList.prototype.resetData = function () {
+    this.list.resetData();
+
+    if ( this.uniqueItem && this.uniqueItem.data.state && this.list.checkedData.length > 1 ) {
+        this.list.clearChecked();
+        if ( this.uniqueItem.index < this.list.$node.children.length + this.list.viewIndex && this.uniqueItem.index < this.list.viewIndex ) {
+            this.list.changeState(this.list.$node.children[this.uniqueItem.index - this.list.viewIndex]);
+        } else {
+            this.uniqueItem.data.state = true;
+            this.list.checkedData.push(this.uniqueItem.data);
+        }
     }
 
-    elements.push(this.label.$text);
-    elements.push(this.label.$count);
+    this.checkedData = this.list.checkedData;
+    this.emit('checked:change', {checkedData: this.checkedData});
+};
 
-    return elements;
+
+/**
+ * Set all states to false and render inner structures and HTML.
+ *
+ * @param {number} focusIndex focus index
+ */
+ModalCheckList.prototype.clearChecked = function ( focusIndex ) {
+    var state = this.uniqueItem && this.uniqueItem.data.defaultState;
+
+    this.list.clearChecked(focusIndex);
+
+    if ( state ) {
+        this.uniqueItem.data.defaultState = state;
+        if ( this.uniqueItem.index < this.list.$node.children.length + this.list.viewIndex && this.uniqueItem.index >= this.list.viewIndex ) {
+            this.list.changeState(this.list.$node.children[this.uniqueItem.index - this.list.viewIndex]);
+        } else {
+            this.uniqueItem.data.state = true;
+            this.list.checkedData.push(this.uniqueItem.data);
+        }
+    }
+
+    this.checkedData = this.list.checkedData;
+    this.emit('checked:change', {checkedData: this.checkedData});
 };
 
 
