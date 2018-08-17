@@ -121,9 +121,15 @@ function ModalCheckList ( config ) {
 
     if ( config.titleCounter ) {
         this.$header.appendChild(
-            dom.tag('div', {className: 'theme-icon'},
-                dom.tag('div', {className: 'theme-counter'},
-                    self.$titleCount = dom.tag('div', {},
+            dom.tag(
+                'div',
+                {className: 'theme-icon'},
+                dom.tag(
+                    'div',
+                    {className: 'theme-counter'},
+                    self.$titleCount = dom.tag(
+                        'div',
+                        {},
                         this.list.data.length && self.uniqueItem ?  this.list.data.length - 1 :  this.list.data.length
                     )
                 )
