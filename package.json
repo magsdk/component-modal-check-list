@@ -1,6 +1,6 @@
 {
     "name": "mag-component-modal-check-list",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Modal message with check list.",
     "author": {
         "name": "Dmitry Fedotov",
