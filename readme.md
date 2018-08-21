@@ -1,5 +1,5 @@
-Modal component
-===============
+Modal check list component
+==========================
 
 [![build status](https://img.shields.io/travis/magsdk/component-modal-check-list.svg?style=flat-square)](https://travis-ci.org/magsdk/component-modal-check-list)
 [![npm version](https://img.shields.io/npm/v/mag-component-modal-check-list.svg?style=flat-square)](https://www.npmjs.com/package/mag-component-modal-check-list)
@@ -9,6 +9,7 @@ Modal component
 
 
 Modal check list is a component to build user interface, an instance of [Component](https://github.com/stbsdk/component) module.
+It is based on [mag-component-modal](https://github.com/magsdk/component-modal) and [mag-component-check-list](https://github.com/magsdk/component-check-list).
 
 
 ## Installation ##
@@ -26,21 +27,31 @@ Add component to the scope:
 var ModalCheckList = require('mag-component-modal-check-list');
 ```
 
+The component config besides `mag-component-modal` contans `mag-component-check-list` config in property `list`.
+This property `list` may contain one unique item. When unique item is checked, all other items will be unchecked. When another item is checked, unique item will be unchecked.
+
 Create instance with custom config:
 
 ```js
 var modalCheckList = new ModalCheckList({
+    // mag-component-modal config
     title: 'sort',
+    titleCounter: false,
+    className: 'sort',
     events: {
-        hide: function () {
-            page.panelSet.focus();
+        show: function () {
+            this.focus();
+        },
+        'checked:change': function ( event ) {
+            console.log(event);            
         }
     },
-    labelIcon: 'theme-icon-filter',
+    // mag-component-check-list config
     list: {
         size: 2,
         data: [
-            {state: true, title: 'All content', value: 1},
+            // unique item
+            {state: true, title: 'All content', value: 1, unique: true},
             {state: false, title: 'Music', value: 2},
             {state: false, title: 'Video', value: 3}
         ]
@@ -48,21 +59,31 @@ var modalCheckList = new ModalCheckList({
 });
 
 page.add(modalCheckList);
-
-leftPanel.add(leftPanelList = new LayoutList({
-    size: 6,
-    data: [
-        {
-            items: page.modalCheckList.getListItem(),
-            click: function () {
-                panelSet.blur();
-                modalCheckList.show();
-            }
-        }
-    ]
-}));
 ```
 
+To work with `mag-component-check-list` properties:
+
+```js
+modalCheckList.list;
+```
+
+To change item state:
+
+```js
+modalCheckList.list.changeState($domItem);
+```
+
+To uncheck all items:
+
+```js
+modalCheckList.clearChecked(newFocusPosition);
+```
+
+To get all checked items data:
+
+```js
+console.log(modalCheckList.checkedData);
+```
 
 ## Development mode ##
 
