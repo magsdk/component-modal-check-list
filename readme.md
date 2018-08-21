@@ -50,7 +50,8 @@ var modalCheckList = new ModalCheckList({
     list: {
         size: 2,
         data: [
-            {state: true, title: 'All content', value: 1, unique: true}, //unique item
+            // unique item
+            {state: true, title: 'All content', value: 1, unique: true},
             {state: false, title: 'Music', value: 2},
             {state: false, title: 'Video', value: 3}
         ]
