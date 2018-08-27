@@ -196,7 +196,7 @@ function ModalCheckList ( config ) {
                     if ( this.checkedData.length === this.data.length - 1 ) {
                         this.clearChecked();
                         index = self.uniqueItem.index - this.viewIndex;
-                        if ( index < this.$node.children.length && index > 0 ) {
+                        if ( index < this.$node.children.length && index >= 0 ) {
                             this.changeState(this.$node.children[index]);
                         } else {
                             self.uniqueItem.data.state = true;
