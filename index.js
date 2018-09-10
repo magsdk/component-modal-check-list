@@ -82,6 +82,8 @@ function ModalCheckList ( config ) {
     config = config || {};
     config.list = config.list || {};
     config.list.events = config.list.events || {};
+    config.list.propagate = config.list.propagate !== false;
+
     config.children = config.children || [];
 
     this.scroll = new Scroll({});
