@@ -8,10 +8,14 @@
     top: 0;
     display: table;
     z-index: 10;
+    visibility: visible;
     outline: 1px dashed #005000;
     outline-offset: -1px; }
     .mag-component-modal.hidden {
         display: none; }
+    .mag-component-modal.hidden {
+        display: table;
+        visibility: hidden; }
     .mag-component-modal.active > div > div > div.overlay {
         display: none; }
     .mag-component-modal > div {
@@ -62,10 +66,14 @@
     top: 0;
     display: table;
     z-index: 10;
+    visibility: visible;
     outline: 1px dashed #005000;
     outline-offset: -1px; }
     .mag-component-modal-check-list.hidden {
         display: none; }
+    .mag-component-modal-check-list.hidden {
+        display: table;
+        visibility: hidden; }
     .mag-component-modal-check-list.active > div > div > div.overlay {
         display: none; }
     .mag-component-modal-check-list > div {
@@ -116,9 +124,3 @@
         position: absolute; }
     .mag-component-modal-check-list.focus {
         outline: 1px dashed red; }
-
-.leftListItemText {
-    max-width: 30px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
